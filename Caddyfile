@@ -1,0 +1,51 @@
+{
+	auto_https off
+	log {
+		output file /var/log/caddy/caddy.log {
+			roll_size 10mb
+			roll_keep 20
+			roll_keep_for 7d
+		}
+		format json {
+			time_local
+			time_format wall
+		}
+		# DEBUG, INFO, WARN, ERROR, PANIC, and FATAL
+		level WARN
+	}
+}
+*.example.top:443 {
+	tls /var/www/*.example.top_ecc/fullchain.cer /var/www/*.example.top_ecc/*.example.top.key 
+	
+	# 转发websockets
+	@websockets {
+		path /releases_ws
+		header Connection Upgrade
+		header Upgrade websocket
+	}
+	reverse_proxy @websockets 127.0.0.1:444
+
+	# 转发h2
+	reverse_proxy /releases_h2 127.0.0.1:445 {
+		transport http {
+			versions h2c
+		}
+	}
+
+	# 转发grpc
+	@grpc {
+		protocol grpc
+		path /releases_grpc/*
+	}
+	reverse_proxy @grpc 127.0.0.1:446 {
+		transport http {
+			versions h2c
+		}
+	}
+
+	# 伪装网站
+	reverse_proxy https://www.cloudflare-cn.com {
+		header_up Host {upstream_hostport}
+		header_up X-Forwarded-Host {host}
+	}
+}
