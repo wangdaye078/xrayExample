@@ -15,8 +15,8 @@
 	}
 }
 *.example.top:443 {
-	tls /var/www/*.example.top_ecc/fullchain.cer /var/www/*.example.top_ecc/*.example.top.key 
-	
+	tls /var/www/*.example.top_ecc/fullchain.cer /var/www/*.example.top_ecc/*.example.top.key
+
 	# 转发websockets
 	@websockets {
 		path /releases_ws
@@ -46,6 +46,5 @@
 	# 伪装网站
 	reverse_proxy https://www.cloudflare-cn.com {
 		header_up Host {upstream_hostport}
-		header_up X-Forwarded-Host {host}
 	}
 }

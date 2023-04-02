@@ -47,12 +47,12 @@
       },
       "streamSettings": {
         "network": "h2",
-	"httpSettings": {
+        "httpSettings": {
            "path": "/releases_h2",
-	   "host": [
-	     "vp1.example.top",
+           "host": [
+             "vp1.example.top",
              "vp2.example.top"
-	   ]
+           ]
         },
         "security": "none"
       },
@@ -78,7 +78,7 @@
       },
       "streamSettings": {
         "network": "grpc",
-	"grpcSettings": {
+        "grpcSettings": {
            "serviceName": "releases_grpc"
         },
         "security": "none"
@@ -99,6 +99,11 @@
       "tag": "direct"
     },
     {
+      "protocol": "freedom",
+      "settings": {"domainStrategy": "UseIP"},
+      "tag": "directex"
+    },
+    {
       "protocol": "blackhole",
       "settings": {},
       "tag": "blocked"
@@ -109,10 +114,18 @@
       {
         "type": "field",
         "ip": [
-	  "geoip:cn",
+          "geoip:cn",
           "geoip:private"
         ],
         "outboundTag": "blocked"
+      },
+      {
+        "type": "field",
+        "domain": [
+          "geosite:netflix",
+          "geosite:disney"
+        ],
+        "outboundTag": "directex"
       },
       {
         "type": "field",
@@ -127,6 +140,19 @@
         ],
         "outboundTag": "api",
         "type": "field"
+      }
+    ]
+  },
+  "dns": {
+    "servers": [
+      "8.8.8.8", 
+      {
+        "address": "78.78.78.78", 
+        "port": 53,
+        "domains": [
+          "geosite:netflix",
+          "geosite:disney"
+        ]
       }
     ]
   },
